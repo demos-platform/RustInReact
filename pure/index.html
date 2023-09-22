@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rust WASM demo</title>
+    <script>
+        /**
+         * 1. 通过使用 instantiateStreaming 调用流式实例化
+         **/
+        WebAssembly.instantiateStreaming(
+          fetch("../fibonacci/pkg/fibonacci_bg.wasm")).then((obj) => {
+            const fib = obj.instance.exports.fib;
+            const out = fib(20);
+            console.log("rust output: ", out);
+          }
+        )
+
+        /**
+         * 2. 不通过流式调用，直接读取二进制文件并对字节进行实例化
+         **/
+        fetch("../fibonacci/pkg/fibonacci_bg.wasm")
+          .then(res => res.arrayBuffer())
+          .then(bytes => WebAssembly.instantiate(bytes))
+          .then(results => {
+              const fib = results.instance.exports.fib;
+              const out = fib(20);
+              console.log("rust output: ", out);
+          })
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
